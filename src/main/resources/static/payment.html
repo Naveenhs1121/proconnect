@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - ProConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .booking-details {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .amount-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .amount-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .amount-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .payment-method {
+            margin-bottom: 30px;
+        }
+
+        .payment-method h3 {
+            color: #1a202c;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .method-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .method-option:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .method-option.selected {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .method-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-pay:active {
+            transform: translateY(0);
+        }
+
+        .secure-badge {
+            text-align: center;
+            margin-top: 20px;
+            color: #718096;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: #48bb78;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="payment-container">
+        <div id="paymentForm">
+            <h1>Complete Payment</h1>
+            <p class="subtitle">Secure payment powered by ProConnect</p>
+
+            <div class="booking-details">
+                <div class="detail-row">
+                    <span class="detail-label">Booking ID</span>
+                    <span class="detail-value" id="bookingId">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Professional</span>
+                    <span class="detail-value" id="professionalName">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value" id="dateTime">-</span>
+                </div>
+            </div>
+
+            <div class="amount-display">
+                <div class="amount-label">Total Amount</div>
+                <div class="amount-value">₹<span id="amount">0</span></div>
+            </div>
+
+            <div class="payment-method">
+                <h3>Select Payment Method</h3>
+                <div class="method-option selected" data-method="card">
+                    <div class="method-icon">💳</div>
+                    <div>
+                        <div style="font-weight: 600; color: #1a202c;">Credit/Debit Card</div>
+                        <div style="font-size: 12px; color: #718096;">Visa, Mastercard, RuPay</div>
+                    </div>
+                </div>
+                <div class="method-option" data-method="upi">
+                    <div class="method-icon">📱</div>
+                    <div>
+                        <div style="font-weight: 600; color: #1a202c;">UPI</div>
+                        <div style="font-size: 12px; color: #718096;">GPay, PhonePe, Paytm</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-pay" onclick="processPayment()">
+                Pay ₹<span id="amountBtn">0</span>
+            </button>
+
+            <div class="secure-badge">
+                🔒 Secured by 256-bit SSL encryption
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: #718096;">Processing your payment...</p>
+        </div>
+
+        <div class="success-message" id="success">
+            <div class="success-icon">✓</div>
+            <h2 style="color: #1a202c; margin-bottom: 10px;">Payment Successful!</h2>
+            <p style="color: #718096; margin-bottom: 20px;">Your booking has been confirmed and funds are held in
+                escrow.</p>
+            <button class="btn-pay" onclick="goToDashboard()">
+                Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Get booking ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingId = urlParams.get('bookingId');
+
+        if (!bookingId) {
+            alert('No booking ID provided');
+            window.location.href = 'user-dashboard.html';
+        }
+
+        let currentUserId = null;
+
+        // Load booking details
+        async function loadBookingDetails() {
+            try {
+                // Fetch booking directly by ID
+                const response = await fetch(`/bookings/${bookingId}`);
+                if (!response.ok) throw new Error("Booking not found");
+                const booking = await response.json();
+
+                // Store userId for redirect
+                currentUserId = booking.userId;
+
+                // Load professional details
+                const profResponse = await fetch(`/professionals/${booking.professionalId}`);
+                const professional = await profResponse.json();
+
+                document.getElementById('bookingId').textContent = booking.id;
+                document.getElementById('professionalName').textContent = professional.name;
+                document.getElementById('dateTime').textContent = `${booking.date} at ${booking.timeSlot}`;
+                document.getElementById('amount').textContent = booking.totalAmount.toFixed(2);
+                document.getElementById('amountBtn').textContent = booking.totalAmount.toFixed(2);
+            } catch (error) {
+                console.error('Error loading booking:', error);
+                alert('Failed to load booking details');
+            }
+        }
+
+        async function goToDashboard() {
+            if (!currentUserId && bookingId) {
+                try {
+                    const response = await fetch(`/bookings/${bookingId}`);
+                    if (response.ok) {
+                        const booking = await response.json();
+                        currentUserId = booking.userId;
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch booking for redirect", e);
+                }
+            }
+
+            if (currentUserId) {
+                window.location.href = `user-dashboard.html?userId=${currentUserId}`;
+            } else {
+                // Fallback if userId not loaded
+                console.warn("No userId found, redirecting to dashboard without ID");
+                window.location.href = 'user-dashboard.html';
+            }
+        }
+
+        // Payment method selection
+        document.querySelectorAll('.method-option').forEach(option => {
+            option.addEventListener('click', function () {
+                document.querySelectorAll('.method-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Process payment
+        async function processPayment() {
+            const amount = parseFloat(document.getElementById('amount').textContent);
+
+            // Show loading
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('/payments/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bookingId: bookingId,
+                        amount: amount
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('success').style.display = 'block';
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('paymentForm').style.display = 'block';
+            }
+        }
+
+        // Load booking details on page load
+        loadBookingDetails();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Professional Dashboard – ProConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif
+        }
+
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 14px 28px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #fb923c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 25px rgba(249, 115, 22, .4);
+        }
+
+        #logout {
+            background: #ef4444;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #logout:hover {
+            background: #f87171;
+        }
+
+        .container {
+            margin: 24px auto;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            border: 1px solid #334155;
+            transition: .2s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 14px rgba(249, 115, 22, .2);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fb923c;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 4px 0 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-accept {
+            background: #22c55e;
+            color: #022c22;
+        }
+
+        .btn-accept:hover {
+            background: #4ade80;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #f87171;
+        }
+    </style>
+    <style>
+        /* ... existing styles ... */
+        /* New Tab Styles */
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #334155;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            color: #fb923c;
+            border-bottom: 2px solid #fb923c;
+            margin-bottom: -2px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Profile Styles */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .photo-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>ProConnect – Professional</div>
+        <div id="logout" onclick="logout()">Logout</div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('bookings')">Bookings</div>
+            <div class="tab" onclick="switchTab('profile')">My Profile</div>
+        </div>
+
+        <!-- BOOKINGS SECTION -->
+        <div id="bookings" class="section active">
+            <h2 style="margin-bottom:20px;color:#cbd5e1;">Incoming Job Requests</h2>
+            <div id="bookingList">
+                <div style="color:#64748b;text-align:center;">Loading...</div>
+            </div>
+        </div>
+
+        <!-- PROFILE SECTION -->
+        <div id="profile" class="section">
+            <h2 style="margin-bottom:20px;color:#cbd5e1;">Manage Profile</h2>
+
+            <div class="card">
+                <div class="title">My Details</div>
+                <div class="info">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display:block;color:#94a3b8;font-size:12px">Description</label>
+                        <textarea id="proDesc" rows="4"
+                            style="width:100%;background:#0f172a;border:1px solid #334155;color:white;padding:10px;border-radius:8px;margin-top:5px"></textarea>
+                    </div>
+                    <button class="btn-accept" onclick="saveProfile()">Save Description</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="title">Work Gallery</div>
+                <div class="info">Manage your portfolio photos</div>
+
+                <div style="display:flex;gap:10px;margin-bottom:15px">
+                    <input type="text" id="newPhotoUrl" placeholder="Paste image URL..."
+                        style="flex:1;background:#0f172a;border:1px solid #334155;color:white;padding:8px;border-radius:8px">
+                    <button class="btn-accept" onclick="addPhoto()">Add Photo</button>
+                </div>
+
+                <div id="photoList" class="photo-grid">
+                    <!-- Photos render here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const proId = new URLSearchParams(window.location.search).get("userId");
+
+        if (!proId) {
+            alert("No proId passed, login again");
+            window.location.href = "/pro-login.html";
+        }
+
+        loadBookings();
+        loadProfile();
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+            // Find specific tab by text content is tricky, so simpler to use index or just toggle classes manually
+            // But here we rely on the click handler passing the ID
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+
+        async function loadBookings() {
+            const res = await fetch(`/bookings/professional/${proId}`);
+            const list = await res.json();
+            renderBookings(list);
+        }
+
+        function renderBookings(list) {
+            const box = document.getElementById("bookingList");
+            box.innerHTML = "";
+
+            if (list.length === 0) {
+                box.innerHTML = "<p style='color:#94a3b8'>No bookings found.</p>";
+                return;
+            }
+
+            list.forEach(item => {
+                box.innerHTML += `
+                <div class="card">
+                    <div class="title">Booking #${item.id}</div>
+                    <div class="info">
+                        Client: <a href="/user-profile.html?id=${item.userId}" style="color:#fb923c;text-decoration:none;border-bottom:1px dashed #fb923c">View Client</a><br>
+                        Status: <b style="color:${getColor(item.status)}">${item.status}</b><br>
+                        Date: ${new Date(item.date).toLocaleString()}
+                    </div>
+                    <div class="actions">
+                        ${item.status === 'PENDING' ? `
+                            <button class="btn-accept" onclick="updateStatus(${item.id}, 'CONFIRMED')">Accept</button>
+                            <button class="btn-reject" onclick="updateStatus(${item.id}, 'REJECTED')">Reject</button>
+                        ` : ''}
+                        ${item.status === 'CONFIRMED' ? `
+                            <button class="btn-accept" onclick="updateStatus(${item.id}, 'COMPLETED')">Mark Complete</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            });
+        }
+
+        async function loadProfile() {
+            const res = await fetch(`/professionals/${proId}`);
+            const p = await res.json();
+
+            document.getElementById('proDesc').value = p.description || "";
+            renderPhotos(p.photos || []);
+        }
+
+        function renderPhotos(photos) {
+            const grid = document.getElementById('photoList');
+            grid.innerHTML = "";
+            photos.forEach(url => {
+                grid.innerHTML += `
+                    <div class="photo-card">
+                        <img src="${url}">
+                        <button class="delete-btn" onclick="deletePhoto('${url}')">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function saveProfile() {
+            const desc = document.getElementById('proDesc').value;
+            const res = await fetch(`/professionals/${proId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description: desc })
+            });
+
+            if (res.ok) alert("Description saved!");
+            else alert("Failed to save.");
+        }
+
+        async function addPhoto() {
+            const url = document.getElementById('newPhotoUrl').value;
+            if (!url) return;
+
+            const res = await fetch(`/professionals/${proId}/photos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' }, // Send raw string
+                body: url
+            });
+
+            if (res.ok) {
+                document.getElementById('newPhotoUrl').value = "";
+                loadProfile(); // reload to show new photo
+            } else {
+                alert("Failed to add photo");
+            }
+        }
+
+        async function deletePhoto(url) {
+            if (!confirm("Remove this photo?")) return;
+
+            const res = await fetch(`/professionals/${proId}/photos?photoUrl=${encodeURIComponent(url)}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) loadProfile();
+            else alert("Failed to delete photo");
+        }
+
+        function getColor(s) {
+            if (s === 'PENDING') return '#fbbf24';
+            if (s === 'CONFIRMED') return '#22c55e';
+            if (s === 'REJECTED') return '#ef4444';
+            if (s === 'COMPLETED') return '#38bdf8';
+            return 'white';
+        }
+
+        async function updateStatus(id, newStatus) {
+            const res = await fetch(`/bookings/${id}/status?status=${newStatus}`, { method: 'PUT' });
+            if (res.ok) {
+                loadBookings();
+            } else {
+                alert("Failed to update status");
+            }
+        }
+
+        function logout() {
+            window.location.href = "/pro-login.html";
+        }
+    </script>
+</body>
+
+</html>

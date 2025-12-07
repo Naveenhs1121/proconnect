@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome – ProConnect</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+        body{
+            min-height:100vh;background:radial-gradient(circle at top,#0f172a,#020617 60%);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;color:#e5e7eb;
+            text-align:center;
+        }
+        .container{
+            width:90%;max-width:800px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        h1{
+            font-size:48px;color:#38bdf8;margin-bottom:12px;
+            text-shadow:0 0 20px rgba(56,189,248,.6);
+        }
+        p{
+            font-size:18px;color:#9ca3af;margin-bottom:40px;line-height:1.6;
+        }
+        .cards-grid{
+            display:flex;gap:24px;justify-content:center;flex-wrap:wrap;
+        }
+        .card{
+            background:rgba(15,23,42,.6);border:1px solid rgba(148,163,184,.2);
+            border-radius:20px;padding:32px;width:300px;
+            transition:.3s;cursor:pointer;
+        }
+        .card:hover{
+            transform:translateY(-5px);
+            background:rgba(30,41,59,.8);
+            border-color:#38bdf8;
+            box-shadow:0 10px 30px rgba(56,189,248,.15);
+        }
+        .card h2{
+            font-size:20px;margin-bottom:12px;color:#e2e8f0;
+        }
+        .card p{
+            font-size:14px;margin-bottom:24px;color:#94a3b8;
+        }
+        .btn{
+            display:inline-block;padding:12px 30px;border-radius:99px;
+            text-decoration:none;font-weight:600;font-size:14px;
+            transition:.2s;
+        }
+        .btn-primary{
+            background:#38bdf8;color:#0f172a;
+        }
+        .btn-primary:hover{
+            background:#7dd3fc;box-shadow:0 0 15px rgba(56,189,248,.5);
+        }
+        .btn-outline{
+            border:1px solid #38bdf8;color:#38bdf8;
+        }
+        .btn-outline:hover{
+            background:rgba(56,189,248,.1);
+        }
+
+        @keyframes fadeIn{
+            from{opacity:0;transform:translateY(20px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ProConnect</h1>
+    <p>Connecting you with the best professionals in your city.<br>Reliable, fast, and secure.</p>
+
+    <div class="cards-grid">
+        <!-- User Card -->
+        <div class="card" onclick="location.href='/user-login.html'">
+            <h2>I need a Service</h2>
+            <p>Find professionals for cleaning, plumbing, repairs, and more.</p>
+            <a href="/user-login.html" class="btn btn-primary">Login as User</a>
+        </div>
+
+        <!-- Professional Card -->
+        <div class="card" onclick="location.href='/pro-login.html'">
+            <h2>I am a Professional</h2>
+            <p>Join our network to find new customers and grow your business.</p>
+            <a href="/pro-login.html" class="btn btn-outline">Login as Pro</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pro Login – ProConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #111827, #020617 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e5e7eb;
+        }
+
+        .card {
+            width: 340px;
+            background: rgba(15, 23, 42, .96);
+            border-radius: 18px;
+            padding: 26px;
+            border: 1px solid rgba(148, 163, 184, .4);
+            box-shadow: 0 0 35px rgba(249, 115, 22, .3);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #fb923c;
+            margin-bottom: 4px;
+            text-shadow: 0 0 14px rgba(249, 115, 22, .8);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 400;
+            color: #9ca3af;
+            margin-bottom: 18px;
+        }
+
+        .label {
+            font-size: 13px;
+            margin: 8px 2px 4px;
+            color: #cbd5f5
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+            outline: none;
+            font-size: 13px;
+        }
+
+        input:focus {
+            border-color: #fb923c;
+            box-shadow: 0 0 10px rgba(248, 113, 22, .7);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-login {
+            background: #fb923c;
+            color: #0b1220;
+        }
+
+        .btn-login:hover {
+            background: #fdba74;
+            box-shadow: 0 0 12px rgba(248, 187, 133, .7);
+        }
+
+        .status {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .status.ok {
+            background: rgba(22, 163, 74, .15);
+            color: #bbf7d0;
+        }
+
+        .status.err {
+            background: rgba(220, 38, 38, .15);
+            color: #fecaca;
+        }
+
+        .small {
+            margin-top: 12px;
+            font-size: 11px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .link {
+            color: #38bdf8;
+            cursor: pointer
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>ProConnect</h1>
+        <h2>Professional Login</h2>
+
+        <div class="label">Email</div>
+        <input id="emailInput" placeholder="you@service.com">
+
+        <div class="label">Password</div>
+        <input id="passwordInput" type="password" placeholder="Your password">
+
+        <button class="btn-login" onclick="login()">Login</button>
+
+        <div id="msg" class="status" style="display:none;"></div>
+
+        <div class="small">
+            New pro? <span class="link" onclick="goRegister()">Create profile</span>
+        </div>
+    </div>
+
+    <script>
+        function showMsg(text, ok) {
+            const el = document.getElementById('msg');
+            el.style.display = 'block';
+            el.className = 'status ' + (ok ? 'ok' : 'err');
+            el.innerText = text;
+        }
+
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+        async function login() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) return showMsg("Fill both fields", false);
+            if (!gmailRegex.test(email)) return showMsg("Only @gmail.com is allowed", false);
+
+            const body = { email, password };
+
+            try {
+                const res = await fetch('/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) {
+                    const t = await res.text();
+                    return showMsg("Login failed: " + t, false);
+                }
+
+                const user = await res.json();
+                showMsg("Login success ✔", true);
+
+                // Redirect to pro dashboard with user id
+                window.location.href = "/pro-dashboard.html?userId=" + user.id;
+            } catch (e) {
+                showMsg("Server error", false);
+            }
+        }
+
+        function goRegister() {
+            window.location.href = "/pro-register.html";
+        }
+    </script>
+</body>
+
+</html>

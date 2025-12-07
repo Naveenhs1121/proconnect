@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Client Profile - ProConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #fb923c;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 20px 40px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            width: 90%;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #0f172a;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .detail {
+            color: #94a3b8;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .contact-box {
+            background: #334155;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-val {
+            font-size: 20px;
+            color: #fff;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a onclick="history.back()" class="logo">← Back</a>
+    </header>
+
+    <div class="container" id="profileContent">
+        <p style="text-align:center">Loading client profile...</p>
+    </div>
+
+    <script>
+        const userId = new URLSearchParams(window.location.search).get("id");
+
+        if (!userId) {
+            document.getElementById('profileContent').innerHTML = "<h2 style='text-align:center'>No User ID provided</h2>";
+        } else {
+            loadProfile();
+        }
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`/users/${userId}`);
+                if (!res.ok) throw new Error("User not found");
+                const u = await res.json();
+
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="profile-card">
+                        <div class="avatar">${u.name.charAt(0)}</div>
+                        <h1>${u.name}</h1>
+                        <div class="detail">${u.city || "Location not set"}</div>
+                        
+                        <div class="contact-box">
+                            <div class="contact-label">Phone Number</div>
+                            <div class="contact-val">${u.phone || "Not provided"}</div>
+                        </div>
+                        
+                        <div class="contact-box" style="margin-top:15px; background: #0f172a; border: 1px solid #334155">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-val" style="font-size:16px">${u.email}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('profileContent').innerHTML = "<h2 style='text-align:center;color:#ef4444'>Client Not Found</h2>";
+            }
+        }
+    </script>
+</body>
+
+</html>

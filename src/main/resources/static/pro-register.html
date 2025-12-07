@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Professional Register – ProConnect</title>
+    <style>
+        /* reuse same look */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #020617, #020617 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e5e7eb;
+        }
+
+        .card {
+            width: 400px;
+            background: rgba(15, 23, 42, .96);
+            border-radius: 18px;
+            padding: 26px;
+            border: 1px solid rgba(148, 163, 184, .4);
+            box-shadow: 0 0 35px rgba(249, 115, 22, .35);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #fb923c;
+            margin-bottom: 4px;
+            text-shadow: 0 0 14px rgba(249, 115, 22, .9);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 400;
+            color: #9ca3af;
+            margin-bottom: 18px;
+        }
+
+        .label {
+            font-size: 13px;
+            margin: 8px 2px 4px;
+            color: #cbd5f5
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #4b5563;
+            background: #020617;
+            color: #e5e7eb;
+            outline: none;
+            font-size: 13px;
+        }
+
+        input:focus {
+            border-color: #fb923c;
+            box-shadow: 0 0 10px rgba(248, 113, 22, .7);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-otp {
+            background: #fb923c;
+            color: #0b1220;
+        }
+
+        .btn-otp:hover {
+            background: #fdba74;
+            box-shadow: 0 0 12px rgba(248, 187, 133, .7);
+        }
+
+        .btn-register {
+            background: #22c55e;
+            color: #022c22;
+        }
+
+        .btn-register:hover {
+            background: #4ade80;
+            box-shadow: 0 0 12px rgba(74, 222, 128, .7);
+        }
+
+        .status {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .status.ok {
+            background: rgba(22, 163, 74, .15);
+            color: #bbf7d0;
+        }
+
+        .status.err {
+            background: rgba(220, 38, 38, .15);
+            color: #fecaca;
+        }
+
+        .small {
+            margin-top: 12px;
+            font-size: 11px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .link {
+            color: #38bdf8;
+            cursor: pointer
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>ProConnect</h1>
+        <h2>Professional Registration (OTP)</h2>
+
+        <div class="label">Full Name</div>
+        <input id="nameInput" placeholder="Your name">
+
+        <div class="label">Email</div>
+        <input id="emailInput" placeholder="you@service.com">
+
+        <div class="label">Password</div>
+        <input id="passwordInput" type="password" placeholder="Choose password">
+
+        <div class="label">Phone</div>
+        <input id="phoneInput" placeholder="98765xxxx">
+
+        <div class="label">Service Type</div>
+        <input id="serviceInput" placeholder="plumber, electrician, tutor...">
+
+        <div class="label">City</div>
+        <input id="cityInput" placeholder="Your city">
+
+        <div class="label">OTP (from email)</div>
+        <input id="otpInput" placeholder="Enter 6-digit OTP">
+
+        <button class="btn-otp" onclick="sendOtp()">Send OTP</button>
+        <button class="btn-register" onclick="verifyAndRegister()">Verify & Register</button>
+
+        <div id="msg" class="status" style="display:none;"></div>
+
+        <div class="small">
+            Already registered? <span class="link" onclick="goLogin()">Go to Pro Login</span>
+        </div>
+    </div>
+
+    <script>
+        function showMsg(text, ok) {
+            const el = document.getElementById('msg');
+            el.style.display = 'block';
+            el.className = 'status ' + (ok ? 'ok' : 'err');
+            el.innerText = text;
+        }
+
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        // At least 8 chars, 1 upper, 1 lower, 1 number, 1 special
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        async function sendOtp() {
+            const email = emailInput.value.trim();
+            if (!email) return showMsg("Enter email first", false);
+            if (!gmailRegex.test(email)) return showMsg("Only @gmail.com is allowed", false);
+
+            const body = { email: email, role: "PROFESSIONAL" };
+
+            try {
+                const res = await fetch('/auth/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const text = await res.text();
+                showMsg(text, res.ok);
+            } catch (e) {
+                showMsg("Failed to send OTP", false);
+            }
+        }
+
+        async function verifyAndRegister() {
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const serviceType = serviceInput.value.trim();
+            const city = cityInput.value.trim();
+            const otp = otpInput.value.trim();
+
+            if (!name || !email || !password || !phone || !serviceType || !city || !otp) {
+                return showMsg("Fill all fields + OTP", false);
+            }
+            if (!gmailRegex.test(email)) {
+                return showMsg("Only @gmail.com is allowed", false);
+            }
+            if (!passRegex.test(password)) {
+                return showMsg("Password weak: Use 8+ chars, Upper, Lower, Number, Special", false);
+            }
+            if (phone.length !== 10 || isNaN(phone)) {
+                return showMsg("Phone must be 10 digits", false);
+            }
+
+            const body = {
+                name, email, password,
+                role: "PROFESSIONAL",
+                phone, serviceType, city,
+                otp
+            };
+
+            try {
+                const res = await fetch('/auth/register-with-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const text = await res.text();
+                if (!res.ok) return showMsg("Register failed: " + text, false);
+
+                showMsg("Professional registered ✔ Redirecting...", true);
+                setTimeout(() => {
+                    window.location.href = "/pro-login.html";
+                }, 1000);
+            } catch (e) {
+                showMsg("Server error", false);
+            }
+        }
+
+        function goLogin() {
+            window.location.href = "/pro-login.html";
+        }
+    </script>
+</body>
+
+</html>

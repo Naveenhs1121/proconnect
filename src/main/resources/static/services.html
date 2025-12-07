@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>All Services - ProConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #22d3ee;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 20px 40px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #334155;
+            transition: .2s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            background: #334155;
+            border-color: var(--primary);
+        }
+
+        .icon {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: white;
+        }
+
+        .back-btn {
+            background: #334155;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">ProConnect</div>
+        <a id="backLink" href="#" class="back-btn">Back to Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>All Available Services</h1>
+        <p class="subtitle">Select a category to find professionals near you</p>
+
+        <div id="grid" class="services-grid">
+            <p style="text-align:center; width:100%">Loading services...</p>
+        </div>
+    </div>
+
+    <script>
+        const userId = new URLSearchParams(window.location.search).get("userId");
+        if (userId) {
+            document.getElementById('backLink').href = `/user-dashboard.html?userId=${userId}`;
+        } else {
+            document.getElementById('backLink').href = `/user-login.html`;
+        }
+
+        function getEmoji(service) {
+            const map = {
+                'Plumber': '🔧', 'Electrician': '⚡', 'Carpenter': '🪚',
+                'Mechanic': '🚗', 'Tutor': '📚', 'Cleaner': '🧹',
+                'Painter': '🎨', 'Gardener': '🌿', 'Chef': '👨‍🍳',
+                'Driver': '🚕', 'Photographer': '📸', 'Web Developer': '💻',
+                'Consultant': '👔', 'Yoga Instructor': '🧘'
+            };
+            return map[service] || '🛠️';
+        }
+
+        async function loadServices() {
+            try {
+                const res = await fetch('/professionals/services');
+                const services = await res.json();
+                const grid = document.getElementById('grid');
+                grid.innerHTML = '';
+
+                services.forEach(s => {
+                    grid.innerHTML += `
+                    <div class="service-card" onclick="selectService('${s}')">
+                        <span class="icon">${getEmoji(s)}</span>
+                        <div class="name">${s}</div>
+                    </div>
+                    `;
+                });
+            } catch (e) {
+                document.getElementById('grid').innerHTML = "<p style='color:red'>Failed to load services</p>";
+            }
+        }
+
+        function selectService(service) {
+            if (userId) {
+                window.location.href = `/user-dashboard.html?userId=${userId}&service=${service}`;
+            } else {
+                window.location.href = `/user-login.html`;
+            }
+        }
+
+        loadServices();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Professional Profile - ProConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #22d3ee;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 20px 40px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            width: 90%;
+        }
+
+        .profile-header {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .info h1 {
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .info .subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .rating-badge {
+            background: #facc15;
+            color: #713f12;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #334155;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .about-section {
+            margin-top: 30px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+
+        .about-section h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .about-text {
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .action-bar {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .book-btn {
+            background: #22c55e;
+            color: #0f172a;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .book-btn:hover {
+            background: #4ade80;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Modal Styles (Reused) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            width: 400px;
+            border: 1px solid #475569;
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .field-group {
+            margin-bottom: 14px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-left: 2px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            margin-top: 5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            background: #475569;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .confirm-btn {
+            background: #22c55e;
+            color: #0f172a;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="#" class="logo" onclick="history.back()">← Back to Dashboard</a>
+    </header>
+
+    <div class="container" id="profileContainer">
+        <p>Loading profile...</p>
+    </div>
+
+    <!-- BOOKING MODAL -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal">
+            <h3>Book Professional</h3>
+            <div class="field-group">
+                <div class="label">Date</div>
+                <input type="date" id="bookDate">
+            </div>
+            <div class="field-group">
+                <div class="label">Time (e.g. 10:00 AM)</div>
+                <input type="time" id="bookTime">
+            </div>
+            <div class="field-group">
+                <div class="label">Notes</div>
+                <textarea id="bookNotes" rows="3" placeholder="Describe issue..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="confirm-btn" onclick="confirmBooking()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const proId = new URLSearchParams(window.location.search).get("id");
+        const userId = new URLSearchParams(window.location.search).get("userId"); // Pass userId via URL for now
+
+        if (!proId) {
+            document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px'>404 - No Professional ID</h1>";
+        } else {
+            loadProfile();
+        }
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`/professionals/${proId}`);
+                if (!res.ok) throw new Error("Not found");
+                const p = await res.json();
+
+                document.getElementById('profileContainer').innerHTML = `
+                    <div class="profile-header">
+                        <div class="avatar">${p.name.charAt(0)}</div>
+                        <div class="info">
+                            <h1>${p.name}</h1>
+                            <div class="subtitle">
+                                <span>${p.serviceType}</span>
+                                <span>•</span>
+                                <span>${p.city}</span>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-val">⭐ ${p.rating ? p.rating.toFixed(1) : 'New'}</div>
+                                    <div class="stat-label">Rating</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-val">${p.experienceYears || 0} Years</div>
+                                    <div class="stat-label">Experience</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-val">${p.reviewsCount || 0}</div>
+                                    <div class="stat-label">Reviews</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-val">₹${p.hourlyRate ? p.hourlyRate.toFixed(0) : '50'}/hr</div>
+                                    <div class="stat-label">Hourly Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h2>About Me</h2>
+                        <p class="about-text">${p.description || "No description provided."}</p>
+                    </div>
+
+                    <div class="about-section">
+                        <h2>Work Gallery</h2>
+                        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                            ${p.photos && p.photos.length > 0
+                        ? p.photos.map(url => `<img src="${url}" style="width: 100%; border-radius: 8px; border: 1px solid #334155; object-fit: cover; aspect-ratio: 16/9;">`).join('')
+                        : '<p style="color:var(--text-muted)">No photos available.</p>'}
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button class="book-btn" onclick="openBookingModal()">Book Now</button>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('profileContainer').innerHTML = "<p>Failed to load profile.</p>";
+            }
+        }
+
+        function openBookingModal() {
+            if (!userId) { alert("Please login first (UserId missing in URL)."); return; }
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        async function confirmBooking() {
+            const date = document.getElementById('bookDate').value;
+            const time = document.getElementById('bookTime').value;
+            const notes = document.getElementById('bookNotes').value;
+
+            if (!date || !time) { alert("Select date/time"); return; }
+
+            const body = {
+                userId: userId,
+                professionalId: proId,
+                date: date,
+                timeSlot: time,
+                notes: notes,
+                status: "PENDING"
+            };
+
+            const res = await fetch("/bookings/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                alert("Booking Sent!");
+                closeModal();
+                history.back(); // Go back to dashboard
+            } else {
+                alert("Error booking.");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard – ProConnect</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 14px 28px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #22d3ee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 25px rgba(34, 211, 238, .4);
+        }
+
+        #logout {
+            background: #ef4444;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        #logout:hover {
+            background: #f87171;
+        }
+
+        .container {
+            margin: 24px auto;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        /* --- TABS --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #94a3b8;
+            font-weight: 500;
+            transition: .2s;
+        }
+
+        .tab.active {
+            background: #22d3ee;
+            color: #0f172a;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+        }
+
+        /* --- SECTIONS --- */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .category-name {
+            font-weight: 500;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        /* --- SEARCH --- */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        input,
+        select,
+        textarea {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            margin-top: 5px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #22d3ee;
+            outline: none;
+        }
+
+        button {
+            background: #22c55e;
+            padding: 10px 18px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #0f172a;
+            transition: .2s;
+        }
+
+        button:hover {
+            background: #4ade80;
+        }
+
+        /* --- CARDS --- */
+        .card {
+            background: #1e293b;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            border: 1px solid #334155;
+            transition: .2s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4ade80;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .book-btn {
+            background: #22c55e;
+            padding: 8px 14px;
+            border-radius: 7px;
+            font-size: 14px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+        }
+
+        /* --- STATUS BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .badge.PENDING {
+            background: #facc15;
+            color: #713f12;
+        }
+
+        .badge.CONFIRMED {
+            background: #22c55e;
+            color: #14532d;
+        }
+
+        .badge.COMPLETED {
+            background: #3b82f6;
+            color: #1e3a8a;
+        }
+
+        .badge.CANCELLED {
+            background: #ef4444;
+            color: #7f1d1d;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            width: 400px;
+            border: 1px solid #475569;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+            color: #22d3ee;
+        }
+
+        .field-group {
+            margin-bottom: 14px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-left: 2px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            background: #475569;
+            color: #e2e8f0;
+        }
+
+        .cancel-btn:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>ProConnect – User Dashboard</div>
+        <div id="logout" onclick="logout()">Logout</div>
+    </header>
+
+    <div class="container">
+
+        <!-- TABS -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('search')">Find Professionals</div>
+            <div class="tab" onclick="switchTab('bookings')">My Bookings</div>
+            <div class="tab" onclick="switchTab('profile')">My Profile</div>
+        </div>
+
+        <!-- PROFILE SECTION -->
+        <div id="profile-section" class="section">
+            <div class="card">
+                <div class="title">Edit Profile</div>
+                <div class="field-group" style="margin-top:10px">
+                    <div class="label">Name</div>
+                    <input id="userName" type="text" placeholder="Your Name">
+                </div>
+                <div class="field-group">
+                    <div class="label">Phone</div>
+                    <input id="userPhone" type="text" placeholder="Your Phone">
+                </div>
+                <div class="field-group">
+                    <div class="label">City</div>
+                    <input id="userCity" type="text" placeholder="Your City">
+                </div>
+                <button onclick="saveProfile()" style="margin-top:10px">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- SEARCH SECTION -->
+        <div id="search-section" class="section active">
+            <div class="search-box">
+                <input id="searchInput" list="serviceList" placeholder="Search plumber, electrician, carpenter..."
+                    style="flex:2">
+                <datalist id="serviceList"></datalist>
+
+                <input id="cityInput" list="cityList" placeholder="City (e.g. New York)" style="flex:1">
+                <datalist id="cityList"></datalist>
+
+                <button onclick="search()">Search</button>
+            </div>
+
+            <!-- Popular Categories -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px;">
+                <h3 style="color:#666;">Popular Categories</h3>
+                <a onclick="viewAllServices()"
+                    style="color:#22d3ee; cursor:pointer; font-size:14px; text-decoration:none;">View All Services →</a>
+            </div>
+            <div id="popularCategoriesGrid" class="categories-grid">
+                <p style="color:#666; font-size:14px">Loading categories...</p>
+            </div>
+
+            <!-- Top Rated Professionals -->
+            <div id="top-rated-section" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 14px; color: #facc15;">⭐ Top Rated Professionals</h3>
+                <div id="topRatedList" class="categories-grid"
+                    style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                    <!-- Loaded via JS -->
+                    <p style="color:#666; font-size:14px">Loading top rated...</p>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 14px; color: #e2e8f0; margin-top: 30px;">Available Professionals</h3>
+            <div id="proList">
+                <p style="color:#666; font-size:14px; margin-top:10px">Use search or click a category to find pros.</p>
+            </div>
+        </div>
+
+        <!-- BOOKINGS SECTION -->
+        <div id="bookings-section" class="section">
+            <h3 style="margin-bottom: 14px; color: #e2e8f0;">My Bookings & Requests</h3>
+            <div id="bookingsList">
+                <p style="color:#94a3b8">Loading...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOOKING MODAL -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal">
+            <h3>Book Professional</h3>
+            <div class="field-group">
+                <div class="label">Date</div>
+                <input type="date" id="bookDate" onchange="loadSlots()">
+            </div>
+            <div class="field-group">
+                <div class="label">Time Slot</div>
+                <select id="bookTime" onchange="checkSlot()">
+                    <option value="">Select Date First</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <div class="label">Notes / Issue Description</div>
+                <textarea id="bookNotes" rows="3" placeholder="Describe what you need..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button onclick="confirmBooking()">Confirm Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userId = new URLSearchParams(window.location.search).get("userId");
+        let selectedProId = null;
+
+        if (!userId) {
+            alert("No userId passed, login again");
+            window.location.href = "/user-login.html";
+        } else {
+            loadSuggestions();
+            loadTopRated();
+            loadProfile();
+            loadCategories(); // New: Load dynamic categories
+
+            // Check for auto-search params from services page
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceParam = urlParams.get('service');
+            if (serviceParam) {
+                document.getElementById('searchInput').value = serviceParam;
+                // Wait a bit for page to settle then search
+                setTimeout(search, 500);
+            }
+        }
+
+        function getEmoji(service) {
+            const map = {
+                'Plumber': '🔧', 'Electrician': '⚡', 'Carpenter': '🪚',
+                'Mechanic': '🚗', 'Tutor': '📚', 'Cleaner': '🧹',
+                'Painter': '🎨', 'Gardener': '🌿', 'Chef': '👨‍🍳',
+                'Driver': '🚕', 'Photographer': '📸'
+            };
+            return map[service] || '🛠️';
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/professionals/services');
+                const services = await res.json();
+                const box = document.getElementById('popularCategoriesGrid');
+                box.innerHTML = '';
+
+                // Show only first 8 as "Popular"
+                services.slice(0, 8).forEach(s => {
+                    box.innerHTML += `
+                    <div class="category-card" onclick="searchCategory('${s}')">
+                        <span class="category-icon">${getEmoji(s)}</span>
+                        <span class="category-name">${s}</span>
+                    </div>
+                    `;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function viewAllServices() {
+            window.location.href = `/services.html?userId=${userId}`;
+        }
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`/users/${userId}`);
+                if (res.ok) {
+                    const u = await res.json();
+                    document.getElementById('userName').value = u.name || "";
+                    document.getElementById('userPhone').value = u.phone || "";
+                    document.getElementById('userCity').value = u.city || "";
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveProfile() {
+            const body = {
+                name: document.getElementById('userName').value,
+                phone: document.getElementById('userPhone').value,
+                city: document.getElementById('userCity').value
+            };
+            const res = await fetch(`/users/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (res.ok) alert("Profile Saved!");
+            else alert("Failed to save profile");
+        }
+
+        async function loadTopRated() {
+            try {
+                const res = await fetch('/professionals/top-rated');
+                const pros = await res.json();
+                const box = document.getElementById('topRatedList');
+                box.innerHTML = '';
+
+                pros.forEach(p => {
+                    box.innerHTML += `
+                    <div class="category-card" style="text-align:left" onclick="viewProfile(${p.id})">
+                        <div style="font-size:16px; font-weight:600; color:#22d3ee">${p.name}</div>
+                        <div style="font-size:12px; color:#666; margin-bottom:5px">${p.serviceType} in ${p.city}</div>
+                        <div class="badge CONFIRMED" style="background:#facc15; color:#713f12">⭐ ${p.rating ? p.rating.toFixed(1) : 'New'}</div>
+                    </div>
+                    `;
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function viewProfile(proId) {
+            window.location.href = `/professional-profile.html?id=${proId}&userId=${userId}`;
+        }
+
+        async function loadSuggestions() {
+            try {
+                const sRes = await fetch('/professionals/services');
+                const services = await sRes.json();
+                const sList = document.getElementById('serviceList');
+                services.forEach(s => {
+                    let opt = document.createElement('option');
+                    opt.value = s;
+                    sList.appendChild(opt);
+                });
+
+                const cRes = await fetch('/professionals/cities');
+                const cities = await cRes.json();
+                const cList = document.getElementById('cityList');
+                cities.forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c;
+                    cList.appendChild(opt);
+                });
+            } catch (e) {
+                console.error("Failed to load suggestions", e);
+            }
+        }
+
+        function switchTab(tab) {
+            // Update Tab UI
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (tab === 'search') document.querySelector('.tab:nth-child(1)').classList.add('active');
+            else if (tab === 'bookings') document.querySelector('.tab:nth-child(2)').classList.add('active');
+            else document.querySelector('.tab:nth-child(3)').classList.add('active');
+
+            // Show Section
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tab + '-section').classList.add('active');
+
+            if (tab === 'bookings') {
+                loadBookings();
+            }
+        }
+
+        /* --- SEARCH LOGIC --- */
+        async function search() {
+            const s = document.getElementById("searchInput").value.trim();
+            const c = document.getElementById("cityInput").value.trim();
+
+            const res = await fetch(`/professionals/search?serviceType=${s}&city=${c}`);
+            const pros = await res.json();
+
+            const box = document.getElementById("proList");
+            box.innerHTML = "";
+
+            if (pros.length === 0) {
+                box.innerHTML = "<p style='color:#ef4444'>No professionals found matching criteria.</p>";
+                return;
+            }
+
+            pros.forEach(p => {
+                box.innerHTML += `
+                <div class="card">
+                    <div class="title">${p.name} <span style="font-size:14px; color:#facc15">⭐ ${p.rating ? p.rating.toFixed(1) : ''}</span></div>
+                    <div class="small">Service: ${p.serviceType}</div>
+                    <div class="small">City: ${p.city}</div>
+                    <div class="small">Experience: ${p.experienceYears || 0} Years</div>
+                    <button class="book-btn" onclick="viewProfile(${p.id})">View Profile</button>
+                </div>
+                `;
+            });
+        }
+
+        /* --- BOOKING LOGIC --- */
+        function openBookingModal(proId) {
+            selectedProId = proId;
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+            selectedProId = null;
+        }
+
+        async function confirmBooking() {
+            const date = document.getElementById('bookDate').value;
+            const time = document.getElementById('bookTime').value;
+            const notes = document.getElementById('bookNotes').value;
+
+            if (!date || !time) {
+                alert("Please select date and time");
+                return;
+            }
+
+            const body = {
+                userId: userId,
+                professionalId: selectedProId,
+                date: date,
+                timeSlot: time,
+                notes: notes,
+                status: "PENDING"
+            };
+
+            try {
+                const res = await fetch("/bookings/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    alert("Booking requested successfully!");
+                    closeModal();
+                    switchTab('bookings');
+                } else if (res.status === 409) {
+                    alert("This slot was just taken! Please choose another.");
+                    loadSlots(); // refresh slots
+                } else {
+                    alert("Failed to create booking");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error creating booking");
+            }
+        }
+
+        async function loadSlots() {
+            const date = document.getElementById('bookDate').value;
+            const timeSelect = document.getElementById('bookTime');
+            timeSelect.innerHTML = '<option value="">Loading...</option>';
+
+            if (!date) return;
+
+            // Generate slots 9am to 5pm
+            const allSlots = [
+                "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
+            ];
+
+            try {
+                const res = await fetch(`/bookings/busy-slots?professionalId=${selectedProId}&date=${date}`);
+                const busyBookings = await res.json();
+                const busySlots = busyBookings.map(b => b.timeSlot);
+
+                timeSelect.innerHTML = '<option value="">Select Time</option>';
+                allSlots.forEach(slot => {
+                    if (busySlots.includes(slot)) {
+                        timeSelect.innerHTML += `<option value="${slot}" disabled>${slot} (Busy)</option>`;
+                    } else {
+                        timeSelect.innerHTML += `<option value="${slot}">${slot}</option>`;
+                    }
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadBookings() {
+            const box = document.getElementById("bookingsList");
+            box.innerHTML = "<p>Loading...</p>";
+
+            try {
+                const res = await fetch(`/bookings/user/${userId}`);
+                if (!res.ok) throw new Error("Failed to load");
+                const bookings = await res.json();
+
+                box.innerHTML = "";
+                if (bookings.length === 0) {
+                    box.innerHTML = "<p>No bookings found.</p>";
+                    return;
+                }
+
+                bookings.forEach(b => {
+                    const statusClass = b.status ? b.status : 'PENDING';
+                    const paymentStatus = b.paymentStatus || 'UNPAID';
+                    const totalAmount = b.totalAmount ? b.totalAmount.toFixed(2) : '0.00';
+
+                    // Show Pay Now button only if booking is PENDING and UNPAID
+                    const payButton = (statusClass === 'PENDING' && paymentStatus === 'UNPAID')
+                        ? `<button class="book-btn" style="background:#22d3ee; top:auto; bottom:16px;" onclick="payNow(${b.id})">Pay Now ₹${totalAmount}</button>`
+                        : '';
+
+                    const paymentBadge = paymentStatus === 'PAID'
+                        ? '<span class="badge CONFIRMED" style="margin-left:8px">PAID</span>'
+                        : '<span class="badge PENDING" style="margin-left:8px">UNPAID</span>';
+
+                    box.innerHTML += `
+                    <div class="card" style="padding-bottom:${payButton ? '60px' : '16px'}">
+                        <div class="title">Booking #${b.id}</div>
+                        <div class="small">Date: ${b.date || 'N/A'} at ${b.timeSlot || 'N/A'}</div>
+                        <div class="small">Amount: ₹${totalAmount}</div>
+                        <div class="small">Notes: ${b.notes || '-'}</div>
+                        <div style="margin-top:8px">
+                            <span class="badge ${statusClass}">${statusClass}</span>
+                            ${paymentBadge}
+                        </div>
+                        ${payButton}
+                    </div>
+                    `;
+                });
+            } catch (e) {
+                console.error(e);
+                box.innerHTML = "<p style='color:red'>Failed to load bookings.</p>";
+            }
+        }
+
+        function payNow(bookingId) {
+            window.location.href = `/payment.html?bookingId=${bookingId}`;
+        }
+
+        function searchCategory(category) {
+            document.getElementById('searchInput').value = category;
+            search();
+        }
+
+        function logout() {
+            window.location.href = "/user-login.html";
+        }
+    </script>
+</body>
+
+</html>
